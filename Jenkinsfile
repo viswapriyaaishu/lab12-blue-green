@@ -56,12 +56,12 @@ pipeline {
         }
 
         stage('Test Green') {
-            steps {
-                bat '''
-                powershell -Command "$response = Invoke-RestMethod http://localhost:3002/status; if ($response.status -ne 'UP') { exit 1 }; if ($response.version -ne 'green') { exit 1 }; Write-Host 'Green environment is healthy'"
-                '''
-            }
+        steps {
+            bat '''
+            powershell -NoProfile -Command "$response = curl.exe -s http://localhost:3002/status | ConvertFrom-Json; Write-Host ('Green response: ' + $response.status + ' ' + $response.version); if ($response.status -ne 'UP') { exit 1 }; if ($response.version -ne 'green') { exit 1 }; Write-Host 'Green environment is healthy'"
+            '''
         }
+}
 
         stage('Switch Traffic to Green') {
             steps {
