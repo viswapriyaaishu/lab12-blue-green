@@ -14,6 +14,23 @@ pipeline {
             }
         }
 
+        stage('Debug Docker Credential') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    bat '''
+                    echo Jenkins username: %DOCKER_USER%
+                    echo Testing Docker Hub authentication...
+                    docker logout
+                    echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                    '''
+                }
+            }
+        }
+
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(
